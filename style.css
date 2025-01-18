@@ -1,0 +1,71 @@
+*{
+    margin: 0;
+    padding: 0;
+    font:500;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.header{
+    height: 6vh;
+    width: 100vw;
+    font-size:20px;
+    background-image:linear-gradient(135deg, #454ae1, #454ae1,#060ddf) ;
+    color: white;
+}
+
+.datetime-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#datetime {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.flex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right{
+    width: 60vw;
+}
+.main{
+    margin: 10px;
+}
+
+#entry{
+    padding: 10px 15vw;
+    border-radius: 5px;
+    border: none;
+    background-image:linear-gradient(135deg, #e1f1fd, #e1f1fd,#92bcfc) ;
+}
+
+#enterButton{
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    background-image:linear-gradient(135deg, #a9aaaa, #a9aaaa,#787878) ;
+}
+#showDataButton{
+    margin: 5px 0px; 
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    color:  black;
+    background-image:linear-gradient(135deg, #eae9e9, #f3f2f2,#c9c9c9) ;    
+}
+
+#generate-pdf{
+    margin: 5px ; 
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    color:  rgb(255, 255, 255);
+    background-image:linear-gradient(135deg, #85b8fc, #78b1fa,#4795fc) ;
+}
