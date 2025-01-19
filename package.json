@@ -1,0 +1,18 @@
+{
+  "name": "one-line-journal",
+  "version": "1.0.0",
+  "description": "A web based one line journal for me. I would be adding even little things that made me happy on each day, and read the report at the end of the year.",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'building Journal...'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "firebase": "^9.6.1",
+    "jspdf": "^2.5.1" 
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "author": "Poojan Mehta (aka PJM)",
+  "license": "MIT"
+}

@@ -72,3 +72,35 @@ setInterval(updateDateTime, 1000);
 
 // Initialize with the current date and time
 updateDateTime();
+
+// NOTIFICATION PART
+
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+admin.initializeApp();
+
+exports.sendDailyNotification = functions.pubsub.schedule('0 22 * * *').timeZone('America/New_York').onRun(async (context) => {
+    try {
+        // Fetch all user tokens from Firestore
+        const tokensSnapshot = await admin.firestore().collection("notificationTokens").get();
+        const tokens = tokensSnapshot.docs.map((doc) => doc.data().token);
+
+        if (tokens.length > 0) {
+            const payload = {
+                notification: {
+                    title: "Daily Reminder",
+                    body: "Don't forget to write your One Line Journal entry today!",
+                    icon: "/assets/icons/icon-192x192.png"
+                }
+            };
+
+            // Send notifications to all tokens
+            await admin.messaging().sendToDevice(tokens, payload);
+            console.log("Notifications sent successfully.");
+        } else {
+            console.log("No tokens found.");
+        }
+    } catch (error) {
+        console.error("Error sending notifications:", error);
+    }
+});
