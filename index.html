@@ -1,89 +1,177 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Line Journal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header flex">
+    <nav class="navbar flex">
+        <div class="logo">One Line Today</div>
+        <div class="right"></div>
+    </nav>
+</header>
+<div class="datetime-container">
+    <div id="datetime"></div>
+</div>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/11.2.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/11.2.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+<section class="main">
+    <input type="text" id="entry" placeholder="Write your line of the day">
+    <input type="button" value="Enter" id="enterButton">
+       <!-- Button to fetch and display data -->
+       <input type="button" value="Show Data" id="showDataButton">
+    
+       <!-- Table to display data -->
+       <table id="data-table" border="1">
+           <thead>
+               <tr>
+                   <th>Day</th>
+                   <th>Date</th>
+                   <th>Time</th>
+                   <th>Line of the Day</th>
+               </tr>
+           </thead>
+           <tbody>
+               <!-- Data rows will be inserted here dynamically -->
+           </tbody>
+       </table>
+</section>
+<button class="button" id="generate-pdf">Generate PDF</button>
+<script defer src="/__/firebase/11.2.0/firebase-app-compat.js"></script>
+<!-- include only the Firebase features as you need -->
+<script defer src="/__/firebase/11.2.0/firebase-auth-compat.js"></script>
+<script defer src="/__/firebase/11.2.0/firebase-database-compat.js"></script>
+<script defer src="/__/firebase/11.2.0/firebase-firestore-compat.js"></script>
+<script defer src="/__/firebase/11.2.0/firebase-functions-compat.js"></script>
+<script defer src="/__/firebase/11.2.0/firebase-messaging-compat.js"></script>
+<script defer src="/__/firebase/11.2.0/firebase-storage-compat.js"></script>
+<script defer src="/__/firebase/11.2.0/firebase-analytics-compat.js"></script>
+<script defer src="/__/firebase/11.2.0/firebase-remote-config-compat.js"></script>
+<script defer src="/__/firebase/11.2.0/firebase-performance-compat.js"></script>
+<!-- 
+  initialize the SDK after all desired features are loaded, set useEmulator to false
+  to avoid connecting the SDK to running emulators.
+-->
+<script defer src="/__/firebase/init.js?useEmulator=true"></script>
+<!-- Firebase SDK (Modular) -->
+<script type="module">
+  // Import Firebase libraries
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js";
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCM2jgNXk2VGPTSq3UP_JA4AvtbeVFli6s",
+    authDomain: "one-line-1.firebaseapp.com",
+    projectId: "one-line-1",
+    storageBucket: "one-line-1.appspot.com",
+    messagingSenderId: "232720669465",
+    appId: "1:232720669465:web:c5777e41290be2d6160388",
+    measurementId: "G-TLV1N26J2N"
+  };
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+  // Firebase Cloud Messaging initialization
+  const messaging = getMessaging(app);
+
+  // Request permission for notifications
+  Notification.requestPermission().then((permission) => {
+    if (permission === "granted") {
+      console.log("Notification permission granted.");
+      getToken(messaging, { vapidKey: "BBnABGSWJ6Dm-KIZhOduAs_Rj6Z299VCi4e5tZij0tp98vjM-Aej071OiYmUuGW95jwxtqQ8B_jQob5hB0D1K-U" }).then((token) => {
+    if (token) {
+        console.log("Device token: ", token);
+
+        // Save token to Firestore
+        const tokenRef = collection(db, "notificationTokens");
+        addDoc(tokenRef, { token: token })
+            .then(() => console.log("Token saved successfully."))
+            .catch((err) => console.error("Error saving token:", err));
+    }
+    }).catch((err) => {
+      console.error("Error getting FCM token:", err);
+    });
+
+    } else {
+      console.log("Notification permission denied.");
+    }
+  });
+
+  // Handle incoming notifications (foreground)
+  onMessage(messaging, (payload) => {
+    console.log("Message received. ", payload);
+    const { title, body } = payload.notification;
+    new Notification(title, {
+      body: body,
+      icon: payload.notification.icon || 'assets/default_icon.png'
+    });
+  });
+
+  // Function to handle entry submission
+  function regEntry() {
+    const entryText = document.getElementById("entry").value;
+
+    if (!entryText) {
+      alert("Please enter a line for today.");
+      return;
+    }
+
+    // Get the current date and time
+    const now = new Date();
+    const day = now.toLocaleString("en-US", { weekday: "long" });
+    const date = now.toLocaleDateString();
+    const time = now.toLocaleTimeString();
+
+    // Store the data in Firestore
+    addDoc(collection(db, "entry"), {
+      day: day,
+      date: date,
+      time: time,
+      line_of_the_day: entryText
+    })
+    .then(() => {
+      console.log("Data stored successfully!");
+      alert("Your entry has been saved.");
+      document.getElementById("entry").value = "";  // Clear the input field after submission
+    })
+    .catch((error) => {
+      console.error("Error adding document: ", error);
+      alert("An error occurred. Please try again.");
+    });
+  }
+
+  // Add event listener for button click
+  document.getElementById('enterButton').addEventListener('click', regEntry);
+
+  // Function to fetch and display data in tabular format
+  async function showData() {
+    const querySnapshot = await getDocs(collection(db, "entry"));
+    const tableBody = document.getElementById("data-table").getElementsByTagName("tbody")[0];
+    tableBody.innerHTML = ""; // Clear previous data
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const row = tableBody.insertRow();
+
+      row.insertCell(0).textContent = data.day;
+      row.insertCell(1).textContent = data.date;
+      row.insertCell(2).textContent = data.time;
+      row.insertCell(3).textContent = data.line_of_the_day;
+    });
+  }
+
+  // Add event listener for the Show Data button click
+  document.getElementById('showDataButton').addEventListener('click', showData);
+</script>
+
+<script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
 </html>
+
