@@ -43,9 +43,10 @@
 
 <!-- Firebase SDK (Modular) -->
 <script type="module">
-  // Import the necessary Firebase libraries
+  // Import Firebase libraries
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js";
 
   // Firebase configuration
   const firebaseConfig = {
@@ -61,6 +62,36 @@
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+
+  // Firebase Cloud Messaging initialization
+  const messaging = getMessaging(app);
+
+  // Request permission for notifications
+  Notification.requestPermission().then((permission) => {
+    if (permission === "granted") {
+      console.log("Notification permission granted.");
+      getToken(messaging, { vapidKey: "BBnABGSWJ6Dm-KIZhOduAs_Rj6Z299VCi4e5tZij0tp98vjM-Aej071OiYmUuGW95jwxtqQ8B_jQob5hB0D1K-U" }).then((token) => {
+        if (token) {
+          console.log("Device token: ", token);
+          // Save this token to your server or Firestore for later use
+        }
+      }).catch((err) => {
+        console.error("Error getting FCM token: ", err);
+      });
+    } else {
+      console.log("Notification permission denied.");
+    }
+  });
+
+  // Handle incoming notifications (foreground)
+  onMessage(messaging, (payload) => {
+    console.log("Message received. ", payload);
+    const { title, body } = payload.notification;
+    new Notification(title, {
+      body: body,
+      icon: payload.notification.icon
+    });
+  });
 
   // Function to handle entry submission
   function regEntry() {
@@ -101,13 +132,13 @@
   // Function to fetch and display data in tabular format
   async function showData() {
     const querySnapshot = await getDocs(collection(db, "entry"));
-  const tableBody = document.getElementById("data-table").getElementsByTagName("tbody")[0];
+    const tableBody = document.getElementById("data-table").getElementsByTagName("tbody")[0];
     tableBody.innerHTML = ""; // Clear previous data
-    
+
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       const row = tableBody.insertRow();
-      
+
       row.insertCell(0).textContent = data.day;
       row.insertCell(1).textContent = data.date;
       row.insertCell(2).textContent = data.time;
@@ -117,7 +148,6 @@
 
   // Add event listener for the Show Data button click
   document.getElementById('showDataButton').addEventListener('click', showData);
-
 </script>
 <script src="script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
