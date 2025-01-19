@@ -64,11 +64,8 @@ function generatePDF() {
   doc.save('Daily_Journal_Report.pdf');
 }
 
-
-
 // Add event listener to the "Generate PDF" button
 document.getElementById('generate-pdf').addEventListener('click', generatePDF);
-
 
 // Update the date and time every second
 setInterval(updateDateTime, 1000);

@@ -40,7 +40,6 @@
 </section>
 <button class="button" id="generate-pdf">Generate PDF</button>
 
-
 <!-- Firebase SDK (Modular) -->
 <script type="module">
   // Import Firebase libraries
@@ -89,7 +88,7 @@
     const { title, body } = payload.notification;
     new Notification(title, {
       body: body,
-      icon: payload.notification.icon
+      icon: payload.notification.icon || 'default_icon.png'
     });
   });
 
@@ -149,6 +148,7 @@
   // Add event listener for the Show Data button click
   document.getElementById('showDataButton').addEventListener('click', showData);
 </script>
+
 <script src="script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
